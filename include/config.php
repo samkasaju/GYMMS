@@ -1,16 +1,20 @@
 <?php
-ob_start();
-//DB Connection
-define('DB_HOST','localhost');
-define('DB_USER','root');
-define('DB_PASS','');
-define('DB_NAME','sam');
-// Establish database connection.
-try
-{
-$dbh = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME,DB_USER, DB_PASS,array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'utf8'"));
+
+// Database connection details
+$dbHost = 'localhost';
+$dbUser = 'root';
+$dbPass = '';
+$dbName = 'sam';
+
+try {
+    $dbh = new PDO(
+        "mysql:host=$dbHost;dbname=$dbName;charset=utf8",
+        $dbUser,
+        $dbPass 
+    );
+    return $dbh;
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());  // Stop script on error
 }
-catch (PDOException $e)
-{
-exit("Error: " . $e->getMessage());
-}
+
+?>

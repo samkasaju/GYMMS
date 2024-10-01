@@ -103,7 +103,7 @@ return true;
 		</div>
 	</section>
 
-	<!-- Pricing Section -->
+	
 	<section class="pricing-section spad">
 		<div class="container">
 			
@@ -150,7 +150,7 @@ return true;
 	<?php include 'include/footer.php'; ?>
 	<!-- Footer Section end -->
 
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!-- Search model end -->
 
@@ -162,7 +162,7 @@ return true;
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 	</body>
 </html>
 <?php } ?>

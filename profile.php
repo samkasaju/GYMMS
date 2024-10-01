@@ -96,33 +96,33 @@ if(isset($_POST['submit']))
 							$cnt=1;
 							if($query->rowCount() > 0)
 							{
-							foreach($results as $result)
-							{				?>	
-							<div class="col-md-6">
-								<input type="text" name="fname" id="fname" placeholder="First Name" autocomplete="off" value="<?php echo $result->fname;?>">
-							</div>
-							<div class="col-md-6">
-								<input type="text" name="lname" id="lname" placeholder="Last Name" autocomplete="off" value="<?php echo $result->lname;?>">
-							</div>
-							<div class="col-md-6">
-								<input type="text" name="email" id="email" placeholder="Your Email" autocomplete="off" value="<?php echo $result->email;?>" readonly>
-							</div>
-							<div class="col-md-6">
-								<input type="text" name="mobile" id="mobile" placeholder="Mobile Number" autocomplete="off" value="<?php echo $result->mobile;?>">
-							</div>
-							<div class="col-md-6">
-								<input type="text" name="state" id="state" placeholder="State" autocomplete="off" value="<?php echo $result->state;?>">
-							</div>
-							<div class="col-md-6">
-								<input type="text" name="city" id="city" placeholder="City" autocomplete="off" value="<?php echo $result->city;?>">
-							</div>
-							
-							<div class="col-md-12">
-								<input type="text" name="address" id="address" placeholder="Address" autocomplete="off" value="<?php echo $result->address;?>">
-							</div>
-							<div class="col-md-12">
-						<input type="submit" id="submit" name="submit" value="Update" class="site-btn sb-gradient">
-								
+								foreach($results as $result)
+								{				?>	
+									<div class="col-md-6">
+										<input type="text" name="fname" id="fname" placeholder="First Name" autocomplete="off" value="<?php echo $result->fname;?>">
+									</div>
+									<div class="col-md-6">
+										<input type="text" name="lname" id="lname" placeholder="Last Name" autocomplete="off" value="<?php echo $result->lname;?>">
+									</div>
+									<div class="col-md-6">
+										<input type="text" name="email" id="email" placeholder="Your Email" autocomplete="off" value="<?php echo $result->email;?>" readonly>
+									</div>
+									<div class="col-md-6">
+										<input type="text" name="mobile" id="mobile" placeholder="Mobile Number" autocomplete="off" value="<?php echo $result->mobile;?>">
+									</div>
+									<div class="col-md-6">
+										<input type="text" name="state" id="state" placeholder="State" autocomplete="off" value="<?php echo $result->state;?>">
+									</div>
+									<div class="col-md-6">
+										<input type="text" name="city" id="city" placeholder="City" autocomplete="off" value="<?php echo $result->city;?>">
+									</div>
+									
+									<div class="col-md-12">
+										<input type="text" name="address" id="address" placeholder="Address" autocomplete="off" value="<?php echo $result->address;?>">
+									</div>
+									<div class="col-md-12">
+								<input type="submit" id="submit" name="submit" value="Update" class="site-btn sb-gradient">
+									
 							</div>
 							<?php }} ?>
 						</div>
@@ -137,7 +137,7 @@ if(isset($_POST['submit']))
 <?php include 'include/footer.php'; ?>
 	<!-- Footer Section end -->
 	
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!-- Search model -->
 	
@@ -151,7 +151,7 @@ if(isset($_POST['submit']))
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 
 	</body>
 </html>

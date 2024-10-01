@@ -48,12 +48,12 @@ if (strlen($_SESSION['adminid']==0)) {
                   {
                   ?>
                        <a href="add-category.php">  
-          <div class="widget-small info coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
-            <div class="info">
-              <h4>Listed Categories</h4>
-              <p><b><?php echo $result->totalcat;?></b></p>
-            </div>
-          </div></a>
+                        <div class="widget-small info coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
+                          <div class="info">
+                            <h4>Listed Categories</h4>
+                            <p><b><?php echo $result->totalcat;?></b></p>
+                          </div>
+                        </div></a>
             <?php  } ?>
         </div>
 	
@@ -121,69 +121,6 @@ if (strlen($_SESSION['adminid']==0)) {
         </a>
             <?php  } ?>
         </div>
-	
-    <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalbookings FROM tblbooking where  paymentType is null or paymentType=''";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                  <a href="new-bookings.php"> 
-          <div class="widget-small danger coloured-icon"><i class="icon fa fa-user fa-3x"></i>
-            <div class="info">
-              <h4>New Bookings</h4>
-              <p><b><?php echo $result->totalbookings;?></b></p>
-            </div>
-          </div>
-        </a>
-            <?php  } ?>
-        </div>
-
-	
-    <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalbookings FROM tblbooking where paymentType='Partial Payment'";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                  <a href="partial-payment-bookings.php"> 
-          <div class="widget-small warning coloured-icon"><i class="icon fa fa-user fa-3x"></i>
-            <div class="info">
-              <h4>Partial Payment Bookings</h4>
-              <p><b><?php echo $result->totalbookings;?></b></p>
-            </div>
-          </div>
-        </a>
-            <?php  } ?>
-        </div>
-
-	
-         <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalbookings FROM tblbooking where paymentType='Full Payment'";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                  <a href="full-payment-bookings.php"> 
-          <div class="widget-small primary coloured-icon"><i class="icon fa fa-user fa-3x"></i>
-            <div class="info">
-              <h4>Full Payment Bookings</h4>
-              <p><b><?php echo $result->totalbookings;?></b></p>
-            </div>
-          </div>
-        </a>
-            <?php  } ?>
-        </div>
-
       	
       </div>
      
@@ -194,7 +131,7 @@ if (strlen($_SESSION['adminid']==0)) {
     <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+    
     <!-- The javascript plugin to display page loading on top-->
     <script src="js/plugins/pace.min.js"></script>
     <!-- Page specific javascripts-->

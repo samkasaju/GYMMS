@@ -6,7 +6,7 @@
 					
 					<div class="col-md-8 text-md-right">
 						<div class="copyright"> 
-GYM Managaement System - AJNG <?php echo date('Y') ?></div>
+							GYM Managaement System - Samriddhi <?php echo date('Y') ?></div>
 					</div>
 				</div>
 			</div>

@@ -176,7 +176,7 @@ if(isset($_POST['submit']))
 <?php include 'include/footer.php'; ?>
 	<!-- Footer Section end -->
 	
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!--====== Javascripts & Jquery ======-->
 	<script src="js/vendor/jquery-3.2.1.min.js"></script>
@@ -186,7 +186,7 @@ if(isset($_POST['submit']))
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 
 	</body>
 </html>

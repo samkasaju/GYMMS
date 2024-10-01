@@ -56,7 +56,7 @@ echo "<script>window.location.href='add-category.php'</script>";
     <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
     <?php include 'include/sidebar.php'; ?>
     <main class="app-content">
-        <marquee onMouseOver="this.stop()" style="color: #e92f33;" onMouseOut="this.start()">This is a Code Camp BD's free source code for educational use only. It can never be used for commercial purposes. Don't forget to take code camp BD permission if needed!</marquee>
+        
      <h3>Categories</h3>
      <hr />
 	
@@ -124,7 +124,6 @@ echo "<script>window.location.href='add-category.php'</script>";
                     <td><?php echo($cnt);?></td>
                     <td><?php echo htmlentities($result->category_name);?></td>
                     <td>
-                      <!-- <a href="add-category.php?cid=<?php echo htmlentities($result->id);?>"><button class="btn btn-primary" type="button">Edit</button></a>  -->
                       <a href="add-category.php?del=<?php echo htmlentities($result->id);?>"><button class="btn btn-danger" type="button">Delete</button></a></td>
                   </tr>
                     <?php  $cnt=$cnt+1; } } ?>
@@ -141,7 +140,7 @@ echo "<script>window.location.href='add-category.php'</script>";
      <script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+    
     <script src="js/plugins/pace.min.js"></script>
     <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script>

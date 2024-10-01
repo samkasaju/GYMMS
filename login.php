@@ -17,7 +17,6 @@ if(isset($_POST['submit'])) {
       $count = $stmt->rowCount();
       $row   = $stmt->fetch(PDO::FETCH_ASSOC);
       if($count == 1 && !empty($row)) {
-        /******************** Your code ***********************/
         $_SESSION['uid']   = $row['id'];
         $_SESSION['email'] = $row['email'];
         $_SESSION['name'] = $row['fname'];
@@ -74,7 +73,7 @@ if(isset($_POST['submit'])) {
 
 	
 
-	<!-- Pricing Section -->
+	
 	<section class="pricing-section spad">
 		<div class="container">
 			
@@ -92,9 +91,9 @@ if(isset($_POST['submit'])) {
 							<p>Login</p>
 						</div>
 						 <?php if($error){?><div class="errorWrap" style="color:red;"><strong>ERROR</strong>:<?php echo htmlentities($error); ?> </div><?php } 
-                else if($msg){?><div class="succWrap" style="color:red;"><strong>Error</strong>:<?php echo htmlentities($msg); ?> </div><?php }?>
+                			else if($msg){?><div class="succWrap" style="color:red;"><strong>Error</strong>:<?php echo htmlentities($msg); ?> </div><?php }?>
 
-						<form class="singup-form contact-form" method="post">
+					<form class="singup-form contact-form" method="post">
 						<div class="row">
 							<div class="col-md-12">
 								<input type="text" name="email" id="email" placeholder="Your Email" autocomplete="off" required>
@@ -106,16 +105,15 @@ if(isset($_POST['submit'])) {
 							
 						</div>
 						<div class="row">
-					<div class="col-md-6">
-					<input type="submit" id="submit" name="submit" value="Login" class="site-btn sb-gradient">
-					</div>
-<div class="col-md-6">
+							<div class="col-md-6">
+								<input type="submit" id="submit" name="submit" value="Login" class="site-btn sb-gradient">
+							</div>
+							<div class="col-md-6">
+								<a href="registration.php" class="site-btn sb-gradient">Registration</a>
+							</div>
+						</div>
 	
-<a href="registration.php" class="site-btn sb-gradient">Registration</a>
-					</div>
-				</div>
-	
-</form>
+					</form>
 					</div>
 				</div>
 				<div class="col-lg-3 col-sm-6">
@@ -130,7 +128,7 @@ if(isset($_POST['submit'])) {
 	<?php include 'include/footer.php'; ?>
 	<!-- Footer Section end -->
 
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!-- Search model end -->
 
@@ -142,7 +140,7 @@ if(isset($_POST['submit'])) {
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 	
 	</body>
 </html>

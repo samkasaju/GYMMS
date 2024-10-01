@@ -59,7 +59,7 @@
 	</section>
 
 
-	<!-- Pricing Section -->
+	
 	<section class="pricing-section spad">
 		<div class="container">
 			<div class="section-title text-center">
@@ -69,44 +69,43 @@
 			</div>
 			<div class="row">
 				        <?php 
-
-						$sql ="SELECT id, category, titlename, PackageType, PackageDuratiobn, Price, uploadphoto, Description, create_date from tbladdpackage";
-						$query= $dbh -> prepare($sql);
-						$query-> execute();
-						$results = $query -> fetchAll(PDO::FETCH_OBJ);
-						$cnt=1;
-						if($query -> rowCount() > 0)
-						{
-						foreach($results as $result)
-						{
+							$sql ="SELECT id, category, titlename, PackageType, PackageDuratiobn, Price, uploadphoto, Description, create_date from tbladdpackage";
+							$query= $dbh -> prepare($sql);
+							$query-> execute();
+							$results = $query -> fetchAll(PDO::FETCH_OBJ);
+							$cnt=1;
+							if($query -> rowCount() > 0)
+							{
+								foreach($results as $result)
+							{
 						?>
-				<div class="col-lg-3 col-sm-6">
-					<div class="pricing-item begginer">
-						<div class="pi-top">
-							<h4><?php echo $result->titlename;?></h4>
-						</div>
-						<div class="pi-price">
-							<h3><?php echo htmlentities($result->Price);?></h3>
-							<p>	<?php echo $result->PackageDuratiobn;?></p>
-						</div>
-						<ul>
-							<?php echo $result->Description;?>
-							
-						</ul>
-						<?php if(strlen($_SESSION['uid'])==0): ?>
-						<a href="login.php" class="site-btn sb-line-gradient">Booking Now</a>
-						<?php else :?>
-							<!-- <a href="#" class="site-btn sb-line-gradient">Booking Now</a> -->
-							 <form method='post'>
-                            <input type='hidden' name='pid' value='<?php echo htmlentities($result->id);?>'>
-                          
+							<div class="col-lg-3 col-sm-6">
+								<div class="pricing-item begginer">
+									<div class="pi-top">
+										<h4><?php echo $result->titlename;?></h4>
+									</div>
+									<div class="pi-price">
+										<h3><?php echo htmlentities($result->Price);?></h3>
+										<p>	<?php echo $result->PackageDuratiobn;?></p>
+									</div>
+									<ul>
+										<?php echo $result->Description;?>
+										
+									</ul>
+									<?php if(strlen($_SESSION['uid'])==0): ?>
+									<a href="login.php" class="site-btn sb-line-gradient">Booking Now</a>
+									<?php else :?>
+										<!-- <a href="#" class="site-btn sb-line-gradient">Booking Now</a> -->
+										<form method='post'>
+										<input type='hidden' name='pid' value='<?php echo htmlentities($result->id);?>'>
+									
 
-                        <input class='site-btn sb-line-gradient' type='submit' name='submit' value='Booking Now' onclick="return confirm('Do you really want to book this package.');"> 
-                        </form> 
-							 <?php endif;?>
-					</div>
-				</div>
-				<?php  $cnt=$cnt+1; } } ?>
+									<input class='site-btn sb-line-gradient' type='submit' name='submit' value='Booking Now' onclick="return confirm('Do you really want to book this package.');"> 
+									</form> 
+							<?php endif;?>
+								</div>
+							</div>
+						<?php  $cnt=$cnt+1; } } ?>
 			</div>
 		</div>
 	</section>
@@ -116,7 +115,7 @@
 	<?php include 'include/footer.php'; ?>
 	<!-- Footer Section end -->
 
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!-- Search model end -->
 
@@ -128,6 +127,6 @@
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 	</body>
 </html>

@@ -289,7 +289,7 @@
 	<!-- About Section end -->
 
 
-	<!-- Pricing Section -->
+	
 	<section class="pricing-section spad">
 		<div class="container">
 			<div class="section-title text-center">
@@ -392,7 +392,7 @@ Copyright All rights reserved | This template is made with <i class="fa fa-heart
 	</footer>
 	<!-- Footer Section end -->
 
-	<div class="back-to-top"><img src="img/icons/up-arrow.png" alt=""></div>
+
 
 	<!-- Search model end -->
 
@@ -404,7 +404,7 @@ Copyright All rights reserved | This template is made with <i class="fa fa-heart
 	<script src="js/jquery.nice-select.min.js"></script>
 	<script src="js/jquery-ui.min.js"></script>
 	<script src="js/jquery.magnific-popup.min.js"></script>
-	<script src="js/main.js"></script>
+	
 
 	</body>
 </html>

@@ -1,0 +1,16 @@
+body{
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'lost', sans-serif;
+    background: linear-gradient(to botom, #0f0c29,#302b63e);
+
+}
+.main{
+    width: 350px;
+    height: 100vh;
+    font-family: 'lost' , sans-serif;
+    background
+}

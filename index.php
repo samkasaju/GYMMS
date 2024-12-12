@@ -8,125 +8,246 @@
 	{ 
 		$pid=$_POST['pid'];
 
-
 		$sql="INSERT INTO tblbooking (package_id,userid) Values(:pid,:uid)";
-
 		$query = $dbh -> prepare($sql);
 		$query->bindParam(':pid',$pid,PDO::PARAM_STR);
 		$query->bindParam(':uid',$uid,PDO::PARAM_STR);
 		$query -> execute();
 		echo "<script>alert('Package has been booked.');</script>";
 		echo "<script>window.location.href='booking-history.php'</script>";
-
 	}
-
 ?>
 <!DOCTYPE html>
-<html lang="zxx">
+<html lang="en">
 <head>
-	<title>Samriddhi Gym</title>
-	<meta charset="UTF-8">
-	<meta name="description" content="Samridhi Gym">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<!-- Stylesheets -->
-	<link rel="stylesheet" href="css/bootstrap.min.css"/>
-	<link rel="stylesheet" href="css/font-awesome.min.css"/>
-	<link rel="stylesheet" href="css/owl.carousel.min.css"/>
-	<link rel="stylesheet" href="css/nice-select.css"/>
-	<link rel="stylesheet" href="css/magnific-popup.css"/>
-	<link rel="stylesheet" href="css/slicknav.min.css"/>
-	<link rel="stylesheet" href="css/animate.css"/>
-
-	<!-- Main Stylesheets -->
-	<link rel="stylesheet" href="css/style.css"/>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="css/style.css">
+    <title>Fitness Hub</title>
 </head>
 <body>
-	<!-- Header Section -->
-	<?php include 'include/header.php';?>
-	<!-- Header Section end -->
-                                                         
-	<!-- Page top Section -->
-	<section class="page-top-section set-bg" data-setbg="img/page-top-bg.jpg">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-7 m-auto text-white">
-					<h2>Home</h2>
-					<p>Physical Activity Or Can Improve Your Health</p>
-				</div>
-			</div>
-		</div>
-	</section>
+    
+    <header>
+        <a href="#home" class="logo">GYM <span> MATE</span></a>
+
+        <div class='bx bx-menu' id="menu-icon"></div>
+
+        <ul class="navbar">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#service">Service</a></li>
+            <li><a href="#about">About us</a></li>
+            <li><a href="price.php">Pricing</a></li>
+            <li><a href="#review">Review</a></li>
+        </ul>
+
+      
+        <div class="top-btn"></div>
+        <a href="login.php" class="nav-btn">Join Us</a>
+    </header>
+
+    <!-- home section-->
 
 
-	
-	<section class="pricing-section spad">
-		<div class="container">
-			<div class="section-title text-center">
-				<img src="img/icons/logo-icon.png" alt="">
-				<h2>Pricing plans</h2>
-				<p>Practice Yoga to perfect physical beauty, take care of your soul and enjoy life more fully!</p>
-			</div>
-			<div class="row">
-				        <?php 
-							$sql ="SELECT id, category, titlename, PackageType, PackageDuratiobn, Price, uploadphoto, Description, create_date from tbladdpackage";
-							$query= $dbh -> prepare($sql);
-							$query-> execute();
-							$results = $query -> fetchAll(PDO::FETCH_OBJ);
-							$cnt=1;
-							if($query -> rowCount() > 0)
-							{
-								foreach($results as $result)
-							{
-						?>
-							<div class="col-lg-3 col-sm-6">
-								<div class="pricing-item begginer">
-									<div class="pi-top">
-										<h4><?php echo $result->titlename;?></h4>
-									</div>
-									<div class="pi-price">
-										<h3><?php echo htmlentities($result->Price);?></h3>
-										<p>	<?php echo $result->PackageDuratiobn;?></p>
-									</div>
-									<ul>
-										<?php echo $result->Description;?>
-										
-									</ul>
-									<?php if(strlen($_SESSION['uid'])==0): ?>
-									<a href="login.php" class="site-btn sb-line-gradient">Booking Now</a>
-									<?php else :?>
-										<!-- <a href="#" class="site-btn sb-line-gradient">Booking Now</a> -->
-										<form method='post'>
-										<input type='hidden' name='pid' value='<?php echo htmlentities($result->id);?>'>
-									
+     <section class="home" id="home">
+        <div class="home-content">
 
-									<input class='site-btn sb-line-gradient' type='submit' name='submit' value='Booking Now' onclick="return confirm('Do you really want to book this package.');"> 
-									</form> 
-							<?php endif;?>
-								</div>
-							</div>
-						<?php  $cnt=$cnt+1; } } ?>
-			</div>
-		</div>
-	</section>
+            <h3>Build Your</h3>
+            <h1> Dream Physique</h1>
+            <h3><span class="multiple-text">Bodybulding</span></h3>
+
+            <p>Welcome to Fitness Hub — Where Fitness Meets Lifestyle
+                At Fitness Hub
+                , we believe that fitness is more than just a workout; it's a way of life. Whether you're a beginner or a seasoned athlete, we provide a welcoming and motivating environment where everyone can thrive.</p>
+
+            <a href="#" class="btn">Join Us</a>
+
+ 
+        </div>
+        
+        <div class="home-img">
+            <img src="img/home.jpg" alt="Home Image">
+         </div>
+    </section>
+
+    <!--Services section code-->
+
+    <section class="services" id="services">
+        <h2 class="heading">Our <span>Services</span></h2>
+
+        <div class="services-content">
+            <div class="row">
+                <img src="img/image1.jpg" alt="">
+
+                <h4>Physial Fitness</h4>
+            </div>
+            <div class="row">
+                <img src="img/image2.jpg" alt="">
+
+                <h4>Weight Gain</h4>
+            </div>
+            <div class="row">
+                <img src="img/image3.jpg" alt="">
+
+                <h4>Strength Tranning</h4>
+            </div>
+            <div class="row">
+                <img src="img/image4.jpg" alt="">
+
+                <h4>Fat loss</h4>
+            </div>
+            <div class="row">
+                <img src="img/image5.jpg" alt="">
+
+                <h4>Weightlifting</h4>
+            </div>
+            <div class="row">
+                <img src="img/image6.jpg" alt="">
+
+                <h4>Cardio</h4>
+            
+        </div>
+    </section>
+
+<!--About setion code-->
+    <section class="about" id="about">
+        <div class="about-img">
+            <img src="img/about.jpg" alt="">
+        </div>
+
+        <div class="about-content">
+            <h2 class="heading">Why Choose Us?</h2>
+
+            <p>our Diverse membership base creates a friendly and supportive atmosphere, where you can make friends and stay motivated</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Impedit itaque sed ip</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius, labore  aut.</p>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore provident beatae</p>
+            
+            <a href="#" class="btn">Book a free class</a>
+        
+        </div>
+    </section>
+
+    <!--Pricing section-->
+    
+    <section class="plans" id="plans">
+        <h2 class="heading">Our<span> Plans</span></h2> 
+
+        <div class="plans-content">
+
+            <div class="box">
+                <h3>BASIC</h3>
+                <h2><span>Rs.100/Month</span></h2>
+                <ul>
+                    <li>Smart Workout Plan</li>
+                    <li>At Home Workout</li>
+                </ul>
+                <a href="#">
+                    Join Now
+                    <i class='bx bx-right-arrow-alt'></i>
+                </a>
+            
+            </div>
+
+            <div class="box">
+                <h3>PRO</h3>
+                <h2><span>Rs.150/Month</span></h2>
+                <ul>
+                    <li>PRO GYM</li>
+                    <li>Smart Workout Plan</li>
+                    <li>At Home Workout</li>
+                </ul>
+                <a href="#">
+                    Join Now
+                    <i class='bx bx-right-arrow-alt'></i>
+                </a>
+            </div>
+
+            <div class="box">
+                <h3>PREMIUM</h3>
+                <h2><span>Rs.300/Month</span></h2>
+                <ul>
+                    <li>ELITE GYms and Classes</li>
+                    <li>Pro GYMs</li>
+                    <li>Smart Workout Plan</li>
+                    <li>At Home Workout</li>
+                    <li> Personal Tranning</li>
+                </ul>
+                <a href="#">
+                    Join Now
+                    <i class='bx bx-right-arrow-alt'></i>
+                </a>
+            </div>
+        </div>
+    
+    
+    </section>
+
+    <!-- Reviw section code-->
+
+    <section class="review" id="review" >
+        <div class="review-box">
+            <h2 class="heading"> Client <span> Reviews</span></h2>
+            <div class="wrapper">
+                <div class="review-item">
+                    <img src="img/1.jpg" alt="">
+                    <h2>Beckam</h2>
+                    <div class="rating">
+                        <i class='bx bxs-star' id="star" ></i>
+                        <i class='bx bxs-star' id="star" ></i>
+                        <i class='bx bxs-star' id="star"></i>
+                        <i class='bx bxs-star' id="star"></i>
+                        <i class='bx bxs-star' id="star" ></i>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus in necessitatibus, nisi id atque beatae!</p>
+                </div>
+
+                
+                    
+                        <div class="review-item">
+                            <img src="img/2.jpg" alt="">
+                            <h2>David</h2>
+                            <div class="rating">
+                                <i class='bx bxs-star' id="star" ></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star" ></i>
+                                <i class='bx bxs-star' id="star"></i>
+                            </div>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus in necessitatibus, nisi id atque beatae!</p>
+                            </div>
+
+                  
+                         <div class="review-item">
+                            <img src="img/3.jpg" alt="">
+                            <h2>Sarah</h2>
+                            <div class="rating">
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                <i class='bx bxs-star' id="star"></i>
+                                </div>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus in necessitatibus, nisi id atque beatae!</p>
+                    
+            </div>
+        </div>
+    </section>
+
+    <!--Footer Section Code-->
+
+    <footer class="Footer">
+        <div class="social">
+            <a href="#"><i class='bx bxl-facebook-circle' ></i></a>
+            <a href="#"><i class='bx bxl-instagram' ></i></a>
+            <a href="#"><i class='bx bxl-linkedin' ></i></a>
+        </div>
+
+        <p class="copyright">
+            &copy; Fitness Hub 2024 - All Rights Reserved
+        </p>
+    </footer>
 
 
-	<!-- Footer Section -->
-	<?php include 'include/footer.php'; ?>
-	<!-- Footer Section end -->
-
-
-
-	<!-- Search model end -->
-
-	<!--====== Javascripts & Jquery ======-->
-	<script src="js/vendor/jquery-3.2.1.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/jquery.slicknav.min.js"></script>
-	<script src="js/owl.carousel.min.js"></script>
-	<script src="js/jquery.nice-select.min.js"></script>
-	<script src="js/jquery-ui.min.js"></script>
-	<script src="js/jquery.magnific-popup.min.js"></script>
-	
-	</body>
+</body>
 </html>

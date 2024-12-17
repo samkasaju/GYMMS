@@ -58,7 +58,7 @@ CREATE TABLE `tbladmin` (
   `id` int(11) NOT NULL,
   `name` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
-  `mobile` varchar(45) DEFAULT NULL,
+  `mobile` varchar(45) DEFAULT NULL,                                                                                 
   `password` varchar(100) DEFAULT NULL,
   `create_date` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -296,3 +296,32 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+CREATE TABLE tbluser (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    date_of_birth DATE,
+    gender ENUM('Male', 'Female', 'Other', 'Prefer Not to Say'),
+    mobile_number VARCHAR(15),
+    profile_picture VARCHAR(255),
+    fitness_goal ENUM('Weight Loss', 'Muscle Gain', 'Endurance', 'General Fitness'),
+    height DECIMAL(5,2),
+    weight DECIMAL(5,2),
+    current_fitness_level ENUM('Beginner', 'Intermediate', 'Advanced'),
+    interests TEXT,
+    address VARCHAR(255),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    country VARCHAR(100),
+    postal_code VARCHAR(20),
+    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL,
+    account_status ENUM('Active', 'Inactive', 'Suspended') DEFAULT 'Active',
+    newsletter_subscription BOOLEAN DEFAULT FALSE,
+    preferred_workout_time ENUM('Morning', 'Afternoon', 'Evening', 'Night'),
+    preferred_workout_location ENUM('Gym', 'Home', 'Outdoor'),
+    diet_preference ENUM('Vegetarian', 'Non-Vegetarian', 'Vegan', 'Keto', 'Other')
+);

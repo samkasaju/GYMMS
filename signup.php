@@ -1,107 +1,114 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-require_once('include/config.php');
 
-// Initialize error variables
-$nameError = $emailError = $passwordError = $generalError = "";
+// Database connection
+$host = 'localhost';
+$dbUsername = 'your_username';
+$dbPassword = 'your_password';
+$dbName = 'sam';
 
-if(isset($_POST['submit'])) { 
-    // Sanitize and validate inputs
-    $username = trim($_POST['username']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirm-password'];
+$conn = new mysqli('localhost', 'root', '', 'sam');
 
-    // Validation checks
-    $isValid = true;
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-    // Username validation
-    if (empty($username)) {
-        $nameError = "Please enter a username";
-        $isValid = false;
-    } elseif (strlen($username) < 3) {
-        $nameError = "Username must be at least 3 characters long";
-        $isValid = false;
+// Initialize variables
+$firstName = $lastName = $phone = $gender = $email = '';
+$errors = [];
+
+// Form submission handling
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validate first name
+    if (empty(trim($_POST['first_name']))) {
+        $errors['first_name'] = "First name is required";
+    } else {
+        $firstName = trim($_POST['first_name']);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $firstName)) {
+            $errors['first_name'] = "Only letters and spaces allowed";
+        }
     }
 
-    // Email validation
-    if (empty($email)) {
-        $emailError = "Please enter an email address";
-        $isValid = false;
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $emailError = "Invalid email format";
-        $isValid = false;
+    // Validate last name
+    if (empty(trim($_POST['last_name']))) {
+        $errors['last_name'] = "Last name is required";
+    } else {
+        $lastName = trim($_POST['last_name']);
+        if (!preg_match("/^[a-zA-Z-' ]*$/", $lastName)) {
+            $errors['last_name'] = "Only letters and spaces allowed";
+        }
     }
 
-    // Password validation
+    // Validate phone number
+    if (empty(trim($_POST['phone']))) {
+        $errors['phone'] = "Phone number is required";
+    } else {
+        $phone = trim($_POST['phone']);
+        if (!preg_match("/^[0-9]{10}$/", $phone)) {
+            $errors['phone'] = "Invalid phone number. Must be 10 digits.";
+        }
+    }
+
+    // Validate gender
+    if (empty($_POST['gender'])) {
+        $errors['gender'] = "Gender selection is required";
+    } else {
+        $gender = $_POST['gender'];
+    }
+
+    // Validate email
+    if (empty(trim($_POST['email']))) {
+        $errors['email'] = "Email is required";
+    } else {
+        $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            $errors['email'] = "Invalid email format";
+        } else {
+            // Check if email already exists
+            $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
+            if ($stmt->num_rows > 0) {
+                $errors['email'] = "Email already exists";
+            }
+            $stmt->close();
+        }
+    }
+
+    // Validate password
+    $password = trim($_POST['password']);
+    $confirmPassword = trim($_POST['confirm_password']);
     if (empty($password)) {
-        $passwordError = "Please enter a password";
-        $isValid = false;
+        $errors['password'] = "Password is required";
     } elseif (strlen($password) < 8) {
-        $passwordError = "Password must be at least 8 characters long";
-        $isValid = false;
+        $errors['password'] = "Password must be at least 8 characters";
     } elseif ($password !== $confirmPassword) {
-        $passwordError = "Passwords do not match";
-        $isValid = false;
+        $errors['password'] = "Passwords do not match";
     }
 
-    // Check if email or username already exists
-    if ($isValid) {
-        try {
-            // Check for existing email
-            $checkUser = $dbh->prepare("SELECT id FROM tbluser WHERE email = :email OR username = :username");
-            $checkUser->execute([
-                ':email' => $email,
-                ':username' => $username
-            ]);
+    // If no errors, proceed with registration
+    if (empty($errors)) {
+        // Hash password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            if ($checkUser->rowCount() > 0) {
-                $generalError = "Email or username already exists";
-                $isValid = false;
-            }
-        } catch (PDOException $e) {
-            $generalError = "Database error: " . $e->getMessage();
-            $isValid = false;
+        // Prepare SQL statement
+        $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, phone, gender, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssss", $firstName, $lastName, $phone, $gender, $email, $hashedPassword);
+
+        if ($stmt->execute()) {
+            // Redirect to login page or dashboard
+            $_SESSION['signup_success'] = "Registration successful! Please log in.";
+            header("Location: login.php");
+            exit();
+        } else {
+            $errors['general'] = "Registration failed. Please try again.";
         }
-    }
-
-    // If all validations pass, proceed with registration
-    if ($isValid) {
-        try {
-            // Use secure password hashing
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-            // Prepare SQL to insert new user
-            $sql = "INSERT INTO tbluser (username, email, password, create_date) VALUES (:username, :email, :password, NOW())";
-            $query = $dbh->prepare($sql);
-            
-            // Bind parameters
-            $query->bindParam(':username', $username, PDO::PARAM_STR);
-            $query->bindParam(':email', $email, PDO::PARAM_STR);
-            $query->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
-
-            // Execute the query
-            $query->execute();
-
-            // Get the last inserted ID
-            $lastInsertId = $dbh->lastInsertId();
-
-            if ($lastInsertId > 0) {
-                // Successful registration
-                $_SESSION['signup_success'] = "Registration successful. Please login.";
-                header("Location: login.php");
-                exit();
-            } else {
-                $generalError = "Registration failed. Please try again.";
-            }
-        } catch (PDOException $e) {
-            $generalError = "Registration error: " . $e->getMessage();
-        }
+        $stmt->close();
     }
 }
+$conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,25 +137,97 @@ if(isset($_POST['submit'])) {
 </head>
 <body class="flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-xl shadow-lg">
-        <h1 class="text-center text-4xl font-bold logo-glow">Fitness Hub</h1>
+        <h1 class="text-center text-4xl font-bold logo-glow">GYM SATHI</h1>
         
-        <?php if (!empty($generalError)): ?>
-            <p class="text-red-500 text-center"><?php echo htmlspecialchars($generalError); ?></p>
+        <?php if (!empty($errors['general'])): ?>
+            <p class="text-red-500 text-center"><?php echo htmlspecialchars($errors['general']); ?></p>
         <?php endif; ?>
         
-        <form method="POST" action="" id="signupForm" class="space-y-4">
+        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" id="signupForm" class="space-y-4">
+            <div class="flex space-x-4">
+                <div class="w-1/2">
+                    <label for="first_name" class="block text-sm font-medium">First Name</label>
+                    <input 
+                        type="text" 
+                        name="first_name" 
+                        id="first_name" 
+                        required 
+                        value="<?php echo htmlspecialchars($firstName); ?>"
+                        class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    >
+                    <?php if (!empty($errors['first_name'])): ?>
+                        <p class="error-text"><?php echo htmlspecialchars($errors['first_name']); ?></p>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="w-1/2">
+                    <label for="last_name" class="block text-sm font-medium">Last Name</label>
+                    <input 
+                        type="text" 
+                        name="last_name" 
+                        id="last_name" 
+                        required 
+                        value="<?php echo htmlspecialchars($lastName); ?>"
+                        class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    >
+                    <?php if (!empty($errors['last_name'])): ?>
+                        <p class="error-text"><?php echo htmlspecialchars($errors['last_name']); ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            
             <div>
-                <label for="username" class="block text-sm font-medium">Username</label>
+                <label for="phone" class="block text-sm font-medium">Phone Number</label>
                 <input 
-                    type="text" 
-                    name="username" 
-                    id="username" 
+                    type="tel" 
+                    name="phone" 
+                    id="phone" 
                     required 
-                    value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>"
+                    pattern="[0-9]{10}"
+                    value="<?php echo htmlspecialchars($phone); ?>"
                     class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
                 >
-                <?php if (!empty($nameError)): ?>
-                    <p class="error-text"><?php echo htmlspecialchars($nameError); ?></p>
+                <?php if (!empty($errors['phone'])): ?>
+                    <p class="error-text"><?php echo htmlspecialchars($errors['phone']); ?></p>
+                <?php endif; ?>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Gender</label>
+                <div class="flex space-x-4">
+                    <label class="inline-flex items-center">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Male" 
+                            class="form-radio"
+                            <?php echo ($gender == 'Male') ? 'checked' : ''; ?>
+                        >
+                        <span class="ml-2">Male</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Female" 
+                            class="form-radio"
+                            <?php echo ($gender == 'Female') ? 'checked' : ''; ?>
+                        >
+                        <span class="ml-2">Female</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input 
+                            type="radio" 
+                            name="gender" 
+                            value="Other" 
+                            class="form-radio"
+                            <?php echo ($gender == 'Other') ? 'checked' : ''; ?>
+                        >
+                        <span class="ml-2">Other</span>
+                    </label>
+                </div>
+                <?php if (!empty($errors['gender'])): ?>
+                    <p class="error-text"><?php echo htmlspecialchars($errors['gender']); ?></p>
                 <?php endif; ?>
             </div>
             
@@ -159,36 +238,54 @@ if(isset($_POST['submit'])) {
                     name="email" 
                     id="email" 
                     required 
-                    value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>"
+                    value="<?php echo htmlspecialchars($email); ?>"
                     class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
                 >
-                <?php if (!empty($emailError)): ?>
-                    <p class="error-text"><?php echo htmlspecialchars($emailError); ?></p>
+                <?php if (!empty($errors['email'])): ?>
+                    <p class="error-text"><?php echo htmlspecialchars($errors['email']); ?></p>
                 <?php endif; ?>
             </div>
             
             <div>
                 <label for="password" class="block text-sm font-medium">Password</label>
-                <input 
-                    type="password" 
-                    name="password" 
-                    id="password" 
-                    required 
-                    class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
-                >
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="password" 
+                        required 
+                        class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    >
+                    <button 
+                        type="button" 
+                        id="togglePassword" 
+                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
+                    >
+                        👁️
+                    </button>
+                </div>
             </div>
             
             <div>
-                <label for="confirm-password" class="block text-sm font-medium">Confirm Password</label>
-                <input 
-                    type="password" 
-                    name="confirm-password" 
-                    id="confirm-password" 
-                    required 
-                    class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
-                >
-                <?php if (!empty($passwordError)): ?>
-                    <p class="error-text"><?php echo htmlspecialchars($passwordError); ?></p>
+                <label for="confirm_password" class="block text-sm font-medium">Confirm Password</label>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        name="confirm_password" 
+                        id="confirm_password" 
+                        required 
+                        class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                    >
+                    <button 
+                        type="button" 
+                        id="toggleConfirmPassword" 
+                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400"
+                    >
+                        👁️
+                    </button>
+                </div>
+                <?php if (!empty($errors['password'])): ?>
+                    <p class="error-text"><?php echo htmlspecialchars($errors['password']); ?></p>
                 <?php endif; ?>
             </div>
             
@@ -208,5 +305,18 @@ if(isset($_POST['submit'])) {
             </p>
         </div>
     </div>
+
+    <script>
+        // Password visibility toggle
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmPasswordInput = document.getElementById('confirm_password');
+            confirmPasswordInput.type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+        });
+    </script>
 </body>
 </html>

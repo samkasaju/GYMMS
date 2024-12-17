@@ -1,12 +1,17 @@
 <?php
 session_start();
 error_reporting(E_ALL);
-require_once('include/config.php');
 
-// Check if user is already logged in
-if(isset($_SESSION['uid'])) {
-    header("location: index.php");
-    exit();
+// Database connection
+$host = 'localhost';
+$dbUsername = 'root';
+$dbPassword = '';
+$dbName = 'sam';
+
+$conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
 $msg = "";
@@ -22,25 +27,62 @@ if(isset($_POST['submit'])) {
     } elseif(empty($password)) {
         $msg = "Please enter your password";
     } else {
-        try {
-            // Fetch user with email
-            $query = "SELECT id, fname, email, password FROM tbluser WHERE email = :email";
-            $stmt = $dbh->prepare($query);
-            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-            $stmt->execute();
-            
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Separate queries for user and admin
+        $user_stmt = $conn->prepare("SELECT id, first_name, email, password, 'user' as role FROM users WHERE email = ?");
+        $admin_stmt = $conn->prepare("SELECT id, username, email, password, 'admin' as role FROM tbladmin WHERE email = ?");
+        
+        $user_stmt->bind_param("s", $email);
+        $admin_stmt->bind_param("s", $email);
+        
+        $user_stmt->execute();
+        $admin_stmt->execute();
+        
+        $user_result = $user_stmt->get_result();
+        $admin_result = $admin_stmt->get_result();
+        
+        // Check user credentials
+        if($row = $user_result->fetch_assoc()) {
+            if(password_verify($password, $row['password'])) {
+                // Successful user login
+                $_SESSION['uid'] = $row['id'];
+                $_SESSION['email'] = $row['email'];
+                $_SESSION['name'] = $row['first_name'];
+                $_SESSION['role'] = $row['role'];
 
-            if($row) {
-                // Verify password
-                if(password_verify($password, $row['password'])) {
-                    // Successful login
-                    $_SESSION['uid'] = $row['id'];
-                    $_SESSION['email'] = $row['email'];
-                    $_SESSION['name'] = $row['fname'];
+                // Redirect to user home page
+                header("location: home.php");
+                exit();
+            } else {
+                // Check admin credentials if user login fails
+                $admin_result = $admin_stmt->get_result();
+                if($admin_row = $admin_result->fetch_assoc()) {
+                    if(password_verify($password, $admin_row['password'])) {
+                        // Successful admin login
+                        $_SESSION['admin_id'] = $admin_row['id'];
+                        $_SESSION['email'] = $admin_row['email'];
+                        $_SESSION['username'] = $admin_row['username'];
+                        $_SESSION['role'] = $admin_row['role'];
 
-                    // Redirect to dashboard or home page
-                    header("location: index.php");
+                        // Redirect to admin dashboard
+                        header("location: admin_dashboard.php");
+                        exit();
+                    }
+                }
+                
+                $msg = "Invalid email or password!";
+            }
+        } else {
+            // Check admin credentials
+            if($admin_row = $admin_result->fetch_assoc()) {
+                if(password_verify($password, $admin_row['password'])) {
+                    // Successful admin login
+                    $_SESSION['admin_id'] = $admin_row['id'];
+                    $_SESSION['email'] = $admin_row['email'];
+                    $_SESSION['username'] = $admin_row['username'];
+                    $_SESSION['role'] = $admin_row['role'];
+
+                    // Redirect to admin dashboard
+                    header("location: admin_dashboard.php");
                     exit();
                 } else {
                     $msg = "Invalid email or password!";
@@ -48,11 +90,14 @@ if(isset($_POST['submit'])) {
             } else {
                 $msg = "No account found with this email!";
             }
-        } catch (PDOException $e) {
-            $msg = "Database error: " . $e->getMessage();
         }
+        
+        $user_stmt->close();
+        $admin_stmt->close();
     }
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -78,10 +123,15 @@ if(isset($_POST['submit'])) {
 </head>
 <body class="flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-xl shadow-lg">
-        <h1 class="text-center text-4xl font-bold logo-glow">Fitness Hub</h1>
+        <h1 class="text-center text-4xl font-bold logo-glow">GYM SATHI</h1>
         
         <?php if(!empty($msg)): ?>
             <p class="text-red-500 text-center"><?php echo htmlspecialchars($msg); ?></p>
+        <?php endif; ?>
+        
+        <?php if(isset($_SESSION['signup_success'])): ?>
+            <p class="text-green-500 text-center"><?php echo htmlspecialchars($_SESSION['signup_success']); ?></p>
+            <?php unset($_SESSION['signup_success']); ?>
         <?php endif; ?>
         
         <form method="POST" action="" id="loginForm" class="space-y-4">

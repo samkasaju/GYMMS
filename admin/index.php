@@ -1,145 +1,187 @@
-<?php  session_start();
-error_reporting(0);
-include  'include/config.php'; 
-if (strlen($_SESSION['adminid']==0)) {
-  header('location:logout.php');
-  } else{
+<?php
+session_start();
+error_reporting(E_ALL);
+
+// Include database connection
+require_once 'config/dbcon.php';
+
+$msg = "";
+
+if(isset($_POST['submit'])) {
+    // Sanitize inputs
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+
+    // Validate inputs
+    if(empty($email)) {
+        $msg = "Please enter your email";
+    } elseif(empty($password)) {
+        $msg = "Please enter your password";
+    } else {
+        // Prepare statement for admin login
+        $admin_stmt = $conn->prepare("SELECT * FROM tbladmin WHERE email = ?");
+        
+        if (!$admin_stmt) {
+            // Handle statement preparation error
+            $msg = "Database error: " . $conn->error;
+            error_log("Admin statement preparation error: " . $conn->error);
+        } else {
+            $admin_stmt->bind_param("s", $email);
+            
+            // Execute admin query
+            if (!$admin_stmt->execute()) {
+                $msg = "Execution error: " . $admin_stmt->error;
+                error_log("Admin statement execution error: " . $admin_stmt->error);
+            } else {
+                $admin_result = $admin_stmt->get_result();
+                
+                // Check if result is valid
+                if ($admin_result === false) {
+                    $msg = "Error retrieving admin results";
+                    error_log("Admin result retrieval error");
+                } else {
+                    // Check if admin exists
+                    if($admin_row = $admin_result->fetch_assoc()) {
+                        // Verify admin password
+                        if(password_verify($password, $admin_row['password'])) {
+                            // Successful admin login
+                            $_SESSION['admin_id'] = $admin_row['id'];
+                            $_SESSION['email'] = $admin_row['email'];
+                            $_SESSION['username'] = $admin_row['username'];
+                            $_SESSION['role'] = 'admin';
+
+                            // Redirect to admin dashboard
+                            header("Location: admin/index.php");
+                            exit();
+                        } else {
+                            $msg = "Invalid email or password!";
+                        }
+                    } else {
+                        // If not admin, check regular users
+                        $user_stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+                        
+                        if (!$user_stmt) {
+                            $msg = "Database error: " . $conn->error;
+                            error_log("User statement preparation error: " . $conn->error);
+                        } else {
+                            $user_stmt->bind_param("s", $email);
+                            
+                            if (!$user_stmt->execute()) {
+                                $msg = "Execution error: " . $user_stmt->error;
+                                error_log("User statement execution error: " . $user_stmt->error);
+                            } else {
+                                $user_result = $user_stmt->get_result();
+                                
+                                if ($user_result === false) {
+                                    $msg = "Error retrieving user results";
+                                    error_log("User result retrieval error");
+                                } elseif ($user_row = $user_result->fetch_assoc()) {
+                                    // Verify user password
+                                    if(password_verify($password, $user_row['password'])) {
+                                        // Successful user login
+                                        $_SESSION['uid'] = $user_row['id'];
+                                        $_SESSION['email'] = $user_row['email'];
+                                        $_SESSION['name'] = $user_row['first_name'];
+                                        $_SESSION['role'] = 'user';
+
+                                        // Redirect to user home page
+                                        header("Location: home.php");
+                                        exit();
+                                    } else {
+                                        $msg = "Invalid email or password!";
+                                    }
+                                } else {
+                                    $msg = "No account found with this email!";
+                                }
+                            }
+                            
+                            $user_stmt->close();
+                        }
+                    }
+                }
+                
+                $admin_stmt->close();
+            }
+        }
+    }
+}
 ?>
+
+<!-- Rest of the HTML remains the same -->
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    
-    <title>Admin | Dashboard</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Main CSS-->
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <!-- Font-icon css-->
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  </head>
-  <body class="app sidebar-mini rtl">
-    <!-- Navbar-->
-    <?php include 'include/header.php'; ?>
-    <!-- Sidebar menu-->
-    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
-    <?php include 'include/sidebar.php'; ?>
-    <main class="app-content">
-      <div class="app-title">
-        <div>
-          <h1><i class="fa fa-dashboard"></i> Dashboard</h1>
-        </div>
-        <ul class="app-breadcrumb breadcrumb">
-          <li class="breadcrumb-item"><i class="fa fa-home fa-lg"></i></li>
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-        </ul>
-      </div>
-      
-
-      <div class="row">
-          	
-        <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalcat FROM tblcategory;";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                       <a href="add-category.php">  
-                        <div class="widget-small info coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
-                          <div class="info">
-                            <h4>Listed Categories</h4>
-                            <p><b><?php echo $result->totalcat;?></b></p>
-                          </div>
-                        </div></a>
-            <?php  } ?>
-        </div>
-	
-  <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalpackagetype FROM tblcategory;";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                       <a href="add-package.php">  
-          <div class="widget-small primary coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
-            <div class="info">
-              <h4>Listed Package Type</h4>
-              <p><b><?php echo $result->totalpackagetype;?></b></p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Sathi - Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        .logo-glow {
+            text-shadow: 0 0 10px #4CAF50, 0 0 20px #4CAF50, 0 0 30px #4CAF50;
+            transition: text-shadow 0.3s ease-in-out;
+        }
+        .logo-glow:hover {
+            text-shadow: 0 0 20px #4CAF50, 0 0 40px #4CAF50, 0 0 60px #4CAF50;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-xl shadow-lg">
+        <h1 class="text-center text-4xl font-bold logo-glow">GYM SATHI</h1>
+        
+        <?php if(!empty($msg)): ?>
+            <p class="text-red-500 text-center"><?php echo htmlspecialchars($msg); ?></p>
+        <?php endif; ?>
+        
+        <?php if(isset($_SESSION['signup_success'])): ?>
+            <p class="text-green-500 text-center"><?php echo htmlspecialchars($_SESSION['signup_success']); ?></p>
+            <?php unset($_SESSION['signup_success']); ?>
+        <?php endif; ?>
+        
+        <form method="POST" action="" id="loginForm" class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm font-medium">Email</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    required 
+                    value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>"
+                    class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                >
             </div>
-          </div></a>
-            <?php  } ?>
-        </div>
-
-
-        <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalpost FROM tbladdpackage;";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  $cnt=1;
-                  if($query -> rowCount() > 0)
-                  {
-                  foreach($results as $result)
-                  {
-                  ?>
-	
-                   <a href="manage-post.php">  
-          <div class="widget-small primary coloured-icon"><i class="icon fa fa-file fa-3x"></i>
-            <div class="info">
-              <h4>Listed Packages</h4>
-              <p><b><?php echo $result->totalpost;?></b></p>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    required 
+                    class="w-full px-3 py-2 mt-1 bg-gray-700 border border-gray-600 rounded-md text-white"
+                >
             </div>
-          </div>
-        </a>
-            <?php  $cnt=$cnt+1; } } ?>
+            
+            <button 
+                type="submit" 
+                name="submit"
+                class="w-full py-2 mt-4 bg-green-600 hover:bg-green-700 rounded-md transition duration-300"
+            >
+                Login
+            </button>
+        </form>
+        
+        <div class="text-center mt-4">
+            <p class="text-sm">
+                Don't have an account? 
+                <a href="signup.php" class="text-green-400 hover:text-green-300">Register here</a>
+            </p>
         </div>
-      
-
-        <div class="col-md-6 col-lg-6">
-          <?php
-                  $sql="SELECT count(id) as totalbookings FROM tblbooking;";
-                  $query= $dbh->prepare($sql);
-                  $query-> execute();
-                  $results = $query -> fetchAll(PDO::FETCH_OBJ);
-                  foreach($results as $result)
-                  {
-                  ?>
-                  <a href="booking-history.php"> 
-          <div class="widget-small info coloured-icon"><i class="icon fa fa-users fa-3x"></i>
-            <div class="info">
-              <h4>Total Bookings</h4>
-              <p><b><?php echo $result->totalbookings;?></b></p>
-            </div>
-          </div>
-        </a>
-            <?php  } ?>
-        </div>
-      	
-      </div>
-     
-    </main>
-
-    <?php include_once 'include/footer.php' ?>
-    <!-- Essential javascripts for application to work-->
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <script src="js/popper.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    
-    <!-- The javascript plugin to display page loading on top-->
-    <script src="js/plugins/pace.min.js"></script>
-    <!-- Page specific javascripts-->
-    <!-- Data table plugin-->
-    <script type="text/javascript" src="js/plugins/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="js/plugins/dataTables.bootstrap.min.js"></script>
-    <script type="text/javascript">$('#sampleTable').DataTable();</script>
-    	
-  </body>
+    </div>
+</body>
 </html>
-<?php } ?>
